@@ -1,0 +1,187 @@
+/* ============================================================
+   Terminos.css — Importa-Ya
+   ============================================================ */
+
+/* ---------- Página ---------- */
+.terminos-page {
+  min-height: calc(100vh - 120px);
+  background: #f5f5f5;
+}
+
+/* ---------- Hero ---------- */
+.terminos-hero {
+  background: #222;
+  color: #fff;
+  padding: 48px 24px 40px;
+}
+
+.terminos-hero-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.terminos-hero h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: #ffe600;
+}
+
+.terminos-hero p {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.terminos-hero p strong {
+  color: #fff;
+}
+
+.terminos-hero-aviso {
+  margin-top: 14px !important;
+  font-size: 0.95rem !important;
+  color: #aaa !important;
+  font-style: italic;
+}
+
+/* ---------- Layout dos columnas ---------- */
+.terminos-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ---------- Índice lateral ---------- */
+.terminos-indice {
+  position: sticky;
+  top: 24px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+}
+
+.terminos-indice-titulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #999;
+  margin: 0 0 12px;
+}
+
+.terminos-indice ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.terminos-indice ul li a {
+  display: block;
+  font-size: 0.8rem;
+  color: #444;
+  text-decoration: none;
+  padding: 5px 8px;
+  border-radius: 6px;
+  line-height: 1.35;
+  transition: background 0.15s, color 0.15s;
+}
+
+.terminos-indice ul li a:hover {
+  background: #fff9cc;
+  color: #222;
+}
+
+/* ---------- Contenido principal ---------- */
+.terminos-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ---------- Sección ---------- */
+.terminos-seccion {
+  background: #fff;
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  scroll-margin-top: 24px;
+}
+
+.terminos-seccion h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.terminos-seccion p {
+  font-size: 0.9rem;
+  color: #444;
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+
+.terminos-seccion p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Sección destacada (garantías) ---------- */
+.terminos-seccion.destacada {
+  border: 2px solid #ffe600;
+  background: #fffdf0;
+}
+
+.terminos-seccion.destacada h2 {
+  color: #b8860b;
+  border-bottom-color: #ffe600;
+}
+
+.terminos-seccion.destacada p {
+  color: #3a3000;
+}
+
+/* ---------- Footer legal ---------- */
+.terminos-footer-legal {
+  background: #222;
+  color: #aaa;
+  border-radius: 10px;
+  padding: 20px 28px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 700px) {
+  .terminos-layout {
+    grid-template-columns: 1fr;
+    padding: 24px 12px 60px;
+    gap: 24px;
+  }
+
+  .terminos-indice {
+    position: static;
+  }
+
+  .terminos-hero h1 {
+    font-size: 1.5rem;
+  }
+
+  .terminos-seccion {
+    padding: 20px 18px;
+  }
+}

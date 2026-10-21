@@ -1,0 +1,260 @@
+/* ============================================================
+   Ingresar.css — Importa-Ya
+   ============================================================ */
+
+/* ---------- Página ---------- */
+.ingresar-page {
+  min-height: calc(100vh - 120px);
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px 64px;
+}
+
+/* ---------- Tarjeta centrada ---------- */
+.ingresar-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 48px 44px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 440px;
+}
+
+.ingresar-card h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 6px;
+}
+
+/* ---------- Subtítulo / link registro ---------- */
+.ingresar-subtitulo {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 24px;
+}
+
+.ingresar-subtitulo a {
+  color: #1a73e8;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ingresar-subtitulo a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Alertas ---------- */
+.ingresar-alerta {
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.ingresar-alerta.exito {
+  background: #e8f5e9;
+  color: #256029;
+  border: 1px solid #a5d6a7;
+}
+
+.ingresar-alerta.error {
+  background: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #ef9a9a;
+}
+
+/* ---------- Campos ---------- */
+.ingresar-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+
+.ingresar-campo label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Fila label + "¿Olvidaste?" */
+.ingresar-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ingresar-olvidaste {
+  font-size: 0.8rem;
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.ingresar-olvidaste:hover {
+  text-decoration: underline;
+}
+
+/* Inputs */
+.ingresar-campo input[type="email"],
+.ingresar-campo input[type="password"],
+.ingresar-campo input[type="text"] {
+  height: 44px;
+  border: 1.5px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 0.95rem;
+  color: #222;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ingresar-campo input:focus {
+  border-color: #ffe600;
+  box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.25);
+  background: #fff;
+}
+
+.ingresar-campo input.con-error {
+  border-color: #e53935;
+  background: #fff8f8;
+}
+
+.ingresar-campo input.con-error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.15);
+}
+
+/* ---------- Mensaje de error ---------- */
+.ingresar-error {
+  font-size: 0.78rem;
+  color: #e53935;
+  font-weight: 500;
+}
+
+/* ---------- Input password + botón ver ---------- */
+.ingresar-password {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.ingresar-password input {
+  flex: 1;
+  padding-right: 44px !important;
+}
+
+.ingresar-password button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.ingresar-password button:hover {
+  color: #333;
+}
+
+/* ---------- Botón submit ---------- */
+.ingresar-boton {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  background: #ffe600;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.ingresar-boton:hover:not(:disabled) {
+  background: #fdd800;
+  box-shadow: 0 4px 12px rgba(255, 214, 0, 0.45);
+}
+
+.ingresar-boton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ingresar-boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Divisor "o continúa con" ---------- */
+.ingresar-divisor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+  color: #aaa;
+  font-size: 0.82rem;
+}
+
+.ingresar-divisor::before,
+.ingresar-divisor::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* ---------- Botón Google ---------- */
+.ingresar-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 46px;
+  background: #fff;
+  border: 1.5px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.ingresar-google:hover {
+  border-color: #bbb;
+  background: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 480px) {
+  .ingresar-page {
+    padding: 24px 12px 48px;
+    align-items: flex-start;
+  }
+
+  .ingresar-card {
+    padding: 32px 20px;
+  }
+
+  .ingresar-card h1 {
+    font-size: 1.25rem;
+  }
+}

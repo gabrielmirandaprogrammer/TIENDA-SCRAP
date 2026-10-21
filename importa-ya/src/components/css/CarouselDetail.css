@@ -1,0 +1,63 @@
+.product-gallery {
+  background: #fff;
+  border: 1px solid #e5e4e7;
+  border-radius: 12px;
+  box-shadow:
+    rgba(0, 0, 0, 0.08) 0 4px 12px;
+  overflow: hidden;
+  padding: 15px;
+}
+
+.product-image-container {
+  width: 100%;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 15px;
+}
+
+/* Flechas */
+.product-gallery .carousel-control-prev,
+.product-gallery .carousel-control-next {
+  width: 8%;
+}
+
+.product-gallery .carousel-control-prev-icon,
+.product-gallery .carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  padding: 18px;
+  background-size: 50%;
+}
+
+/* Indicadores */
+.product-gallery .carousel-indicators {
+  margin-bottom: 5px;
+}
+
+.product-gallery .carousel-indicators button {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-image-container {
+    height: 350px;
+  }
+
+  .product-gallery {
+    padding: 10px;
+  }
+}
