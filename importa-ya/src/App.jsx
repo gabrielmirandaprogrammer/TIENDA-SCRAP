@@ -9,12 +9,12 @@ import Carrito from "./pages/Carrito";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Register" element={<Register />} />
-        
+
         <Route
           path="/ProductDetails/:id"
           element={<ProductDetails />}
