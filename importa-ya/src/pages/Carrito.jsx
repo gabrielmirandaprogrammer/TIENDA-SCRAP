@@ -11,7 +11,7 @@ import {
   quitarProducto,
   suscribirseCarrito,
   vaciarCarrito,
-} from "../services/Carrito";
+} from "../services/carrito";
 import "./css/Carrito.css";
 
 function formatearPrecioCOP(precio) {
