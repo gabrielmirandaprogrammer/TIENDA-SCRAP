@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Estado del scraper (cambia en cada corrida)
+Monitor_Thomann_v2/estado.json
+Monitor_Thomann_v2/historial.json
+Monitor_Thomann_v2/progreso_inventario.json
+Monitor_Thomann_v2/tasa_eur_cop.json
