@@ -37,8 +37,8 @@ jobs:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           VITE_EPAYCO_PUBLIC_KEY: ${{ secrets.VITE_EPAYCO_PUBLIC_KEY }}
           VITE_EPAYCO_TEST: "false"
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ 'https://ttslhayuavksvgtfimfa.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ 'sb_publishable_29sCKX2IkGSsmbskgA3xpg_NH3OfrUK' }}
         run: npm run build
 
       - name: Preparar rutas de React Router
