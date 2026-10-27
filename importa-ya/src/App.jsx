@@ -5,6 +5,7 @@ import ProductDetails from "./pages/productDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Terminos from "./pages/Terminos";
+import Carrito from "./pages/Carrito";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           element={<ProductDetails />}
         />
         <Route path="/terminos" element={<Terminos />} />
+        <Route path="/carrito" element={<Carrito />} />
       </Routes>
     </BrowserRouter>
   );

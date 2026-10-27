@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Buscador from "../components/js/busqueda";
 import logo from "../assets/IconLogo.png";
 import { supabase } from "../services/supabase";
@@ -49,10 +50,9 @@ function Navbar({ productos }) {
       {/* Fila inferior: enlaces + usuario */}
       <div className="ml-navbar-bottom">
         <nav className="ml-navbar-links">
-          <a href="/">Inicio</a>
-          <a href="/productos">Productos</a>
-          <a href="/categorias">Categorías</a>
-          <a href="/contacto">Contacto</a>
+          <Link to="/">Inicio</Link>
+          <Link to="/?cat=guitarras">Guitarras</Link>
+          <Link to="/?cat=bajos">Bajos</Link>
         </nav>
 
         <div className="ml-navbar-user">

@@ -1,4 +1,3 @@
-
 /* ===== Página principal ===== */
 
 .home-page {
@@ -8,21 +7,114 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* ===== Hero con fondo difuminado ===== */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 24px 20px 70px;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) saturate(1.2);
+  transform: scale(1.3);
+  opacity: 0.85;
+}
+
+/* Fundido hacia el gris de la página */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 120px;
+  z-index: -1;
+  background: linear-gradient(to bottom, transparent, #ededed);
+}
+
 /* ===== Banner principal ===== */
+/* Definición única: tarjeta centrada, imagen completa sin recortes.
+   (Antes había cuatro bloques consecutivos que se sobrescribían
+   con !important; este reemplaza a todos con el resultado final.) */
 
 .home-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  height: 260px;
+  max-width: 1100px;
+  margin: 0 auto;
   overflow: hidden;
-  background: linear-gradient(110deg, #00a650, #a5d928, #00a650);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
 }
 
 .home-banner-img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ===== Tarjetas de beneficios ===== */
+
+.home-benefits {
+  position: relative;
+  max-width: 1100px;
+  margin: -45px auto 10px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.benefit-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #f0f7ff;
+  font-size: 22px;
+}
+
+.benefit-card strong {
+  display: block;
+  color: #333;
+  font-size: 14px;
+}
+
+.benefit-card p {
+  margin: 2px 0 0;
+  color: #777;
+  font-size: 12px;
 }
 
 /* ===== Contenido general ===== */
@@ -56,10 +148,88 @@
   color: #666;
 }
 
-.home-product-count {
+.home-intro-derecha {
+  display: flex;
   flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.home-product-count {
   color: #555;
   font-size: 13px;
+}
+
+.home-ver-todo {
+  color: #3483fa;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.home-ver-todo:hover {
+  text-decoration: underline;
+}
+
+/* ===== Breadcrumb de categoría ===== */
+
+.home-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #777;
+  font-size: 13px;
+}
+
+.home-breadcrumb a {
+  color: #00a650;
+  text-decoration: none;
+}
+
+.home-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.home-breadcrumb-separador {
+  color: #999;
+}
+
+/* ===== Ordenar por precio ===== */
+
+.home-sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.sort-btn {
+  padding: 10px 16px;
+  border: 1px solid #222;
+  border-radius: 2px;
+  background-color: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sort-btn:hover {
+  background-color: #f2f2f2;
+}
+
+.sort-btn.activo {
+  background-color: #222;
+  color: #fff;
+}
+
+.sort-btn:focus-visible {
+  outline: 2px solid #3483fa;
+  outline-offset: 2px;
 }
 
 /* ===== Cuadrícula de productos ===== */
@@ -168,8 +338,6 @@
   line-height: 1.4;
 }
 
-/* ===== Botón ===== */
-
 .product-button {
   display: block;
   margin-top: auto;
@@ -198,6 +366,36 @@
   text-align: center;
 }
 
+/* ===== Mostrar más ===== */
+
+.home-mostrar-mas {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0 10px;
+}
+
+.home-mostrar-mas button {
+  padding: 12px 28px;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #222;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.home-mostrar-mas button:hover {
+  background-color: #222;
+  color: #fff;
+}
+
+.home-mostrar-mas button:focus-visible {
+  outline: 2px solid #3483fa;
+  outline-offset: 2px;
+}
+
 /* ===== Adaptación a pantallas ===== */
 
 /* Portátiles y pantallas medianas */
@@ -219,19 +417,39 @@
     gap: 12px;
   }
 
-  .home-banner {
-    height: 210px;
-  }
-
   .product-image-container {
     height: 170px;
+  }
+
+  .home-benefits {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* Celulares */
 @media (max-width: 550px) {
+  .hero {
+    padding: 12px 10px 50px;
+  }
+
   .home-banner {
-    height: 150px;
+    border-radius: 8px;
+  }
+
+  .home-benefits {
+    margin-top: -30px;
+    gap: 10px;
+    padding: 0 12px;
+  }
+
+  .benefit-card {
+    padding: 12px;
+  }
+
+  .benefit-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
   .home-content {
@@ -246,6 +464,19 @@
 
   .home-intro h1 {
     font-size: 21px;
+  }
+
+  .home-intro-derecha {
+    align-items: flex-start;
+  }
+
+  .home-sort-controls {
+    font-size: 13px;
+  }
+
+  .sort-btn {
+    padding: 8px 12px;
+    font-size: 13px;
   }
 
   .products-grid {
@@ -278,186 +509,36 @@
     font-size: 12px;
     padding: 9px 5px;
   }
+
+  .home-mostrar-mas button {
+    width: 100%;
+  }
 }
 
-/* Banner completo, sin recortes */
-.home-page .home-banner {
-  width: 100% !important;
-  max-width: none !important;
-  height: auto !important;
-  overflow: visible;
-  position: static !important;
-  left: auto !important;
-  transform: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border-radius: 0;
-  background: transparent;
-  box-sizing: border-box;
-}
-
-.home-page .home-banner-img {
-  display: block;
-  width: 100% !important;
-  max-width: none !important;
-  height: auto !important;
-  margin: 0;
-  border-radius: 0;
-  object-fit: contain !important;
-}
-/* Banner más pequeño y centrado */
-.home-page .home-banner-img {
-  width: 85% !important;
-  max-width: 1100px !important;
-  height: auto !important;
-  margin: 0 auto;
-  object-fit: contain !important;
-}
-
-/* Centrar el banner */
-.home-page .home-banner {
-  display: flex !important;
-  justify-content: center !important;
+.home-solo-nombre {
+  display: inline-flex;
   align-items: center;
-  width: 100% !important;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
 }
 
-/* Mantener la imagen más pequeña y sin recortes */
-.home-page .home-banner-img {
-  display: block;
-  width: 85% !important;
-  max-width: 1100px !important;
-  height: auto !important;
-  margin: 0 auto !important;
-  object-fit: contain !important;
+.home-solo-nombre input {
+  width: 15px;
+  height: 15px;
+  accent-color: #00a650;
+  cursor: pointer;
 }
 
-/* ===== Hero con fondo difuminado ===== */
-.hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 24px 20px 70px;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-size: cover;
-  background-position: center;
-  filter: blur(40px) saturate(1.2);
-  transform: scale(1.3);
-  opacity: 0.85;
-}
-
-/* Fundido hacia el gris de la página */
-.hero::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 120px;
-  z-index: -1;
-  background: linear-gradient(to bottom, transparent, #ededed);
-}
-
-.home-banner {
-  max-width: 1100px;
-  margin: 0 auto;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.home-banner-img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ===== Tarjetas de beneficios ===== */
-.home-benefits {
-  position: relative;
-  max-width: 1100px;
-  margin: -45px auto 10px;
-  padding: 0 20px;
-  box-sizing: border-box;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.benefit-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.benefit-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-
-.benefit-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: #f0f7ff;
-  font-size: 22px;
-}
-
-.benefit-card strong {
-  display: block;
-  color: #333;
-  font-size: 14px;
-}
-
-.benefit-card p {
-  margin: 2px 0 0;
-  color: #777;
-  font-size: 12px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 850px) {
-  .home-benefits {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 550px) {
-  .hero {
-    padding: 12px 10px 50px;
-  }
-
-  .home-banner {
-    border-radius: 8px;
-  }
-
-  .home-benefits {
-    margin-top: -30px;
-    gap: 10px;
-    padding: 0 12px;
-  }
-
-  .benefit-card {
-    padding: 12px;
-  }
-
-  .benefit-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
+.product-match-nota {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: #8a6d00;
+  background-color: #fff7d6;
+  border-radius: 4px;
+  padding: 2px 6px;
+  align-self: flex-start;
 }
