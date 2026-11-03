@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Terminos from "./pages/Terminos";
 import Carrito from "./pages/Carrito";
+import RespuestaPago from "./pages/RespuestaPago";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         />
         <Route path="/terminos" element={<Terminos />} />
         <Route path="/carrito" element={<Carrito />} />
+        <Route path="/pago/respuesta" element={<RespuestaPago />} />
       </Routes>
     </BrowserRouter>
   );

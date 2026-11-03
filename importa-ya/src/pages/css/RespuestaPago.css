@@ -1,0 +1,20 @@
+.respuesta-pago {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.respuesta-pago h1 {
+  margin-bottom: 12px;
+}
+
+.boton-volver {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+}

@@ -13,6 +13,7 @@ import {
   vaciarCarrito,
 } from "../services/carrito";
 import "./css/Carrito.css";
+import { iniciarPagoMercadoPago } from "../services/mercadopago";
 
 function formatearPrecioCOP(precio) {
   const valor = Number(precio);
@@ -32,6 +33,7 @@ function Carrito() {
   const [items, setItems] = useState(leerCarrito);
   const [sincronizando, setSincronizando] = useState(false);
   const [avisoPago, setAvisoPago] = useState("");
+  const [pagando, setPagando] = useState(false);
 
   // Cualquier cambio del carrito (desde el detalle u otra pestaña)
   // actualiza esta página al instante.
@@ -132,7 +134,9 @@ function Carrito() {
   );
   const articulos = contarArticulos(items);
 
-  const manejarPago = () => {
+  async function manejarPago() {
+    if (pagando) return;
+
     if (hayBloqueos) {
       setAvisoPago(
         "Quita los productos agotados o no disponibles para continuar."
@@ -140,8 +144,29 @@ function Carrito() {
       return;
     }
 
-    setAvisoPago("El proceso de pago todavía no está configurado.");
-  };
+    setPagando(true);
+    setAvisoPago("");
+
+    try {
+      // Solo ids y cantidades: los precios los recalcula el servidor
+      // desde la base, nunca se confían en los del navegador.
+      const itemsParaPago = disponibles.map((item) => ({
+        id: item.id,
+        cantidad: item.cantidad,
+      }));
+
+      const { init_point } = await iniciarPagoMercadoPago(itemsParaPago);
+
+      // Salir de la tienda hacia el checkout de MercadoPago.
+      window.location.href = init_point;
+    } catch (error) {
+      console.error("Error al iniciar el pago:", error);
+      setAvisoPago(
+        "No se pudo iniciar el pago. Intenta de nuevo en unos momentos."
+      );
+      setPagando(false);
+    }
+  }
 
   return (
     <>
@@ -317,8 +342,9 @@ function Carrito() {
                   type="button"
                   className="carrito-boton carrito-boton-primario"
                   onClick={manejarPago}
+                  disabled={pagando || disponibles.length === 0}
                 >
-                  Finalizar compra
+                  {pagando ? "Redirigiendo al pago..." : "Finalizar compra"}
                 </button>
 
                 {avisoPago && (
