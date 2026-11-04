@@ -1,10 +1,10 @@
 // Webhook de MercadoPago: recibe notificaciones y actualiza el estado del pedido.
+// Siempre consulta el pago directo a la API de MercadoPago; nunca confía en el POST.
 export async function onRequestPost({ request, env }) {
   const url = new URL(request.url);
   let paymentId = url.searchParams.get("data.id") || url.searchParams.get("id");
   let type = url.searchParams.get("type") || url.searchParams.get("topic");
 
-  // MercadoPago a veces envia el cuerpo como JSON
   if (!paymentId) {
     try {
       const cuerpo = await request.json();
@@ -37,30 +37,34 @@ export async function onRequestPost({ request, env }) {
     refunded: "devuelto",
   };
 
-  const patch = {
-    estado: estados[pago.status] || pago.status,
-    transaction_id: String(pago.id),
-    medio_pago: pago.payment_method_id || null,
-    motivo: pago.status_detail || null,
-    monto: pago.transaction_amount || null,
-    datos: pago,
-  };
-
-  if (pago.external_reference) {
-    await fetch(
-      `${env.SUPABASE_URL}/rest/v1/pedidos?id=eq.${encodeURIComponent(pago.external_reference)}`,
-      {
-        method: "PATCH",
-        headers: {
-          apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-          Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal",
-        },
-        body: JSON.stringify(patch),
-      }
-    );
+  if (!pago.external_reference) {
+    return new Response("ok", { status: 200 });
   }
+
+  const headers = {
+    apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+    Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+    "Content-Type": "application/json",
+    Prefer: "return=minimal",
+  };
+  const filtro = `id=eq.${encodeURIComponent(pago.external_reference)}`;
+
+  // Critico: estado del pedido (columnas garantizadas del esquema)
+  await fetch(`${env.SUPABASE_URL}/rest/v1/pedidos?${filtro}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({
+      estado: estados[pago.status] || pago.status,
+      metodo_pago: `mercadopago/${pago.payment_method_id || "desconocido"}`,
+    }),
+  });
+
+  // Auditoria no critica (ignora errores si las columnas no existen todavia)
+  await fetch(`${env.SUPABASE_URL}/rest/v1/pedidos?${filtro}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ pago_id: String(pago.id), datos: pago }),
+  });
 
   return new Response("ok", { status: 200 });
 }

@@ -50,27 +50,53 @@ export async function onRequestPost({ request, env }) {
   }
 
   const origen = new URL(request.url).origin;
+  const total = itemsMP.reduce((s, i) => s + i.unit_price * i.quantity, 0);
 
-  // 1. Registrar el pedido como pendiente
+  // 1. Registrar el pedido como pendiente (esquema real: total NOT NULL)
   const resPedido = await fetch(`${env.SUPABASE_URL}/rest/v1/pedidos`, {
     method: "POST",
     headers: { ...headersSb, "Content-Type": "application/json", Prefer: "return=representation" },
     body: JSON.stringify([
-      { estado: "pendiente", moneda: "COP", referencia_cliente: "mercadopago", datos: { items: itemsMP } },
+      { total, estado: "pendiente", metodo_pago: "mercadopago" },
     ]),
   });
   if (!resPedido.ok) {
+    console.error("Supabase rechazo el pedido:", resPedido.status, await resPedido.text());
     return Response.json({ error: "no se pudo registrar el pedido" }, { status: 500 });
   }
   const pedido = (await resPedido.json())[0];
 
-  // 2. Crear la preferencia en MercadoPago
+  // 2. Registrar las lineas del pedido en detalle_pedido
+  const resDetalles = await fetch(`${env.SUPABASE_URL}/rest/v1/detalle_pedido`, {
+    method: "POST",
+    headers: { ...headersSb, "Content-Type": "application/json", Prefer: "return=minimal" },
+    body: JSON.stringify(
+      itemsMP.map((i) => ({
+        pedido_id: pedido.id,
+        producto_id: Number(i.id),
+        cantidad: i.quantity,
+        precio_unitario: i.unit_price,
+        subtotal: i.unit_price * i.quantity,
+      }))
+    ),
+  });
+  if (!resDetalles.ok) {
+    console.error("Supabase rechazo el detalle:", resDetalles.status, await resDetalles.text());
+    // Limpieza: no dejar un pedido huerfano sin lineas
+    await fetch(`${env.SUPABASE_URL}/rest/v1/pedidos?id=eq.${pedido.id}`, {
+      method: "DELETE",
+      headers: headersSb,
+    });
+    return Response.json({ error: "no se pudo registrar el detalle del pedido" }, { status: 500 });
+  }
+
+  // 3. Crear la preferencia en MercadoPago
   const resPref = await fetch("https://api.mercadopago.com/checkout/preferences", {
     method: "POST",
     headers: { Authorization: `Bearer ${env.MP_ACCESS_TOKEN}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       items: itemsMP,
-      external_reference: pedido.id,
+      external_reference: String(pedido.id),
       back_urls: {
         success: `${origen}/pago/respuesta?estado=aprobado`,
         pending: `${origen}/pago/respuesta?estado=pendiente`,
@@ -87,15 +113,12 @@ export async function onRequestPost({ request, env }) {
   }
   const pref = await resPref.json();
 
-  // 3. Guardar el id de la preferencia y el monto en el pedido
+  // 4. Auditoria no critica: guardar id de preferencia y snapshot (requiere las columnas pago_id y datos)
   await fetch(`${env.SUPABASE_URL}/rest/v1/pedidos?id=eq.${pedido.id}`, {
     method: "PATCH",
     headers: { ...headersSb, "Content-Type": "application/json", Prefer: "return=minimal" },
-    body: JSON.stringify({
-      ref_payco: pref.id,
-      monto: itemsMP.reduce((s, i) => s + i.unit_price * i.quantity, 0),
-    }),
+    body: JSON.stringify({ pago_id: pref.id, datos: { items: itemsMP, total } }),
   });
 
-  return Response.json({ init_point: pref.init_point, pedido_id: pedido.id });
+  return Response.json({ init_point: pref.init_point, pedido_id: String(pedido.id) });
 }
