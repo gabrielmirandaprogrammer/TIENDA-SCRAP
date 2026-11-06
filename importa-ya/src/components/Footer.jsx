@@ -181,7 +181,7 @@ function Footer() {
 
         <div className="footer-pagos">
           <span>Pago contra entrega, transferencia y tarjetas</span>
-          <span>Envíos a todo el país en 3 a 7 días hábiles</span>
+          <span>Envíos a todo el país en 30 a 40 días hábiles</span>
         </div>
 
         <div className="footer-bottom">

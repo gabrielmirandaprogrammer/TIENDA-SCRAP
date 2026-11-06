@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { supabase } from "../services/supabase";
@@ -12,8 +12,8 @@ import {
   suscribirseCarrito,
   vaciarCarrito,
 } from "../services/carrito";
+import PagoBrick from "../components/PagoBrick";
 import "./css/Carrito.css";
-import { iniciarPagoMercadoPago } from "../services/mercadopago";
 
 function formatearPrecioCOP(precio) {
   const valor = Number(precio);
@@ -30,10 +30,12 @@ function formatearPrecioCOP(precio) {
 }
 
 function Carrito() {
+  const navigate = useNavigate();
   const [items, setItems] = useState(leerCarrito);
   const [sincronizando, setSincronizando] = useState(false);
   const [avisoPago, setAvisoPago] = useState("");
-  const [pagando, setPagando] = useState(false);
+  const [mostrarPago, setMostrarPago] = useState(false);
+  const pagoRef = useRef(null);
 
   // Cualquier cambio del carrito (desde el detalle u otra pestaña)
   // actualiza esta página al instante.
@@ -124,6 +126,13 @@ function Carrito() {
     };
   }, []);
 
+  // Cuando se abre el formulario de pago, baja la vista hasta él.
+  useEffect(() => {
+    if (mostrarPago && pagoRef.current) {
+      pagoRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [mostrarPago]);
+
   const disponibles = items.filter(
     (item) => !item.agotado && !item.fuera_catalogo
   );
@@ -134,8 +143,13 @@ function Carrito() {
   );
   const articulos = contarArticulos(items);
 
-  async function manejarPago() {
-    if (pagando) return;
+  function manejarPago() {
+    setAvisoPago("");
+
+    if (!disponibles.length) {
+      setAvisoPago("Tu carrito está vacío.");
+      return;
+    }
 
     if (hayBloqueos) {
       setAvisoPago(
@@ -144,28 +158,32 @@ function Carrito() {
       return;
     }
 
-    setPagando(true);
-    setAvisoPago("");
+    setMostrarPago(true);
+  }
 
-    try {
-      // Solo ids y cantidades: los precios los recalcula el servidor
-      // desde la base, nunca se confían en los del navegador.
-      const itemsParaPago = disponibles.map((item) => ({
-        id: item.id,
-        cantidad: item.cantidad,
-      }));
-
-      const { init_point } = await iniciarPagoMercadoPago(itemsParaPago);
-
-      // Salir de la tienda hacia el checkout de MercadoPago.
-      window.location.href = init_point;
-    } catch (error) {
-      console.error("Error al iniciar el pago:", error);
-      setAvisoPago(
-        "No se pudo iniciar el pago. Intenta de nuevo en unos momentos."
+  function manejarResultadoPago(resultado) {
+    if (resultado.estado === "aprobado") {
+      // El pago pasó: el carrito ya se convirtió en pedido.
+      vaciarCarrito();
+      navigate(
+        `/pago/respuesta?estado=aprobado&pedido=${resultado.pedido_id}`
       );
-      setPagando(false);
+      return;
     }
+
+    if (resultado.estado === "pendiente") {
+      navigate(
+        `/pago/respuesta?estado=pendiente&pedido=${resultado.pedido_id}`
+      );
+      return;
+    }
+
+    // Rechazado u otro estado: el formulario queda abierto para reintentar.
+    setAvisoPago(
+      resultado.mensaje
+        ? `El pago no se completó: ${resultado.mensaje}`
+        : "El pago no se completó. Intenta con otra tarjeta."
+    );
   }
 
   return (
@@ -191,169 +209,198 @@ function Carrito() {
               </Link>
             </div>
           ) : (
-            <div className="carrito-layout">
-              <section
-                className="carrito-lista"
-                aria-label="Productos en el carrito"
-              >
-                <div className="carrito-cabecera">
-                  <h1>Tu carrito</h1>
-
-                  <div className="carrito-cabecera-datos">
-                    <span>
-                      {articulos}{" "}
-                      {articulos === 1 ? "artículo" : "artículos"}
-                    </span>
-
-                    {sincronizando && (
-                      <span className="carrito-sincronizando">
-                        Actualizando precios...
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      className="carrito-vaciar"
-                      onClick={() => vaciarCarrito()}
-                    >
-                      Vaciar carrito
-                    </button>
-                  </div>
-                </div>
-
-                <ul className="carrito-items">
-                  {items.map((item) => {
-                    const bloqueado =
-                      item.agotado || item.fuera_catalogo;
-
-                    return (
-                      <li
-                        key={item.id}
-                        className={`carrito-item ${
-                          bloqueado ? "esta-bloqueado" : ""
-                        }`}
-                      >
-                        <div className="carrito-item-imagen">
-                          {item.imagen ? (
-                            <img
-                              src={item.imagen}
-                              alt={item.nombre}
-                              loading="lazy"
-                            />
-                          ) : (
-                            <span>Sin imagen</span>
-                          )}
-                        </div>
-
-                        <div className="carrito-item-info">
-                          <p className="carrito-item-nombre">
-                            {item.nombre}
-                          </p>
-
-                          <p className="carrito-item-precio">
-                            {formatearPrecioCOP(item.precio)} c/u
-                          </p>
-
-                          {item.fuera_catalogo && (
-                            <p className="carrito-item-alerta">
-                              Este producto ya no está en el catálogo.
-                            </p>
-                          )}
-
-                          {item.agotado && (
-                            <p className="carrito-item-alerta">
-                              Este producto se agotó en el origen.
-                            </p>
-                          )}
-
-                          <div className="carrito-item-controles">
-                            <button
-                              type="button"
-                              aria-label="Quitar una unidad"
-                              disabled={item.cantidad <= 1}
-                              onClick={() =>
-                                cambiarCantidad(
-                                  item.id,
-                                  item.cantidad - 1
-                                )
-                              }
-                            >
-                              −
-                            </button>
-
-                            <span className="carrito-item-cantidad">
-                              {item.cantidad}
-                            </span>
-
-                            <button
-                              type="button"
-                              aria-label="Agregar una unidad"
-                              disabled={bloqueado}
-                              onClick={() =>
-                                cambiarCantidad(
-                                  item.id,
-                                  item.cantidad + 1
-                                )
-                              }
-                            >
-                              +
-                            </button>
-
-                            <button
-                              type="button"
-                              className="carrito-item-quitar"
-                              onClick={() => quitarProducto(item.id)}
-                            >
-                              Quitar
-                            </button>
-                          </div>
-                        </div>
-
-                        <p className="carrito-item-subtotal">
-                          {formatearPrecioCOP(item.precio * item.cantidad)}
-                        </p>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-
-              <aside
-                className="carrito-resumen"
-                aria-label="Resumen de la compra"
-              >
-                <h2>Resumen</h2>
-
-                <div className="carrito-resumen-fila">
-                  <span>Artículos</span>
-                  <span>{articulos}</span>
-                </div>
-
-                <div className="carrito-resumen-fila carrito-resumen-total">
-                  <span>Total</span>
-                  <span>{formatearPrecioCOP(total)}</span>
-                </div>
-
-                <p className="carrito-resumen-envio">
-                  Envío y entrega: de 30 a 40 días hábiles.
-                </p>
-
-                <button
-                  type="button"
-                  className="carrito-boton carrito-boton-primario"
-                  onClick={manejarPago}
-                  disabled={pagando || disponibles.length === 0}
+            <>
+              <div className="carrito-layout">
+                <section
+                  className="carrito-lista"
+                  aria-label="Productos en el carrito"
                 >
-                  {pagando ? "Redirigiendo al pago..." : "Finalizar compra"}
-                </button>
+                  <div className="carrito-cabecera">
+                    <h1>Tu carrito</h1>
 
-                {avisoPago && (
-                  <p className="carrito-aviso" role="status">
-                    {avisoPago}
+                    <div className="carrito-cabecera-datos">
+                      <span>
+                        {articulos}{" "}
+                        {articulos === 1 ? "artículo" : "artículos"}
+                      </span>
+
+                      {sincronizando && (
+                        <span className="carrito-sincronizando">
+                          Actualizando precios...
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        className="carrito-vaciar"
+                        onClick={() => vaciarCarrito()}
+                      >
+                        Vaciar carrito
+                      </button>
+                    </div>
+                  </div>
+
+                  <ul className="carrito-items">
+                    {items.map((item) => {
+                      const bloqueado =
+                        item.agotado || item.fuera_catalogo;
+
+                      return (
+                        <li
+                          key={item.id}
+                          className={`carrito-item ${
+                            bloqueado ? "esta-bloqueado" : ""
+                          }`}
+                        >
+                          <div className="carrito-item-imagen">
+                            {item.imagen ? (
+                              <img
+                                src={item.imagen}
+                                alt={item.nombre}
+                                loading="lazy"
+                              />
+                            ) : (
+                              <span>Sin imagen</span>
+                            )}
+                          </div>
+
+                          <div className="carrito-item-info">
+                            <p className="carrito-item-nombre">
+                              {item.nombre}
+                            </p>
+
+                            <p className="carrito-item-precio">
+                              {formatearPrecioCOP(item.precio)} c/u
+                            </p>
+
+                            {item.fuera_catalogo && (
+                              <p className="carrito-item-alerta">
+                                Este producto ya no está en el catálogo.
+                              </p>
+                            )}
+
+                            {item.agotado && (
+                              <p className="carrito-item-alerta">
+                                Este producto se agotó en el origen.
+                              </p>
+                            )}
+
+                            <div className="carrito-item-controles">
+                              <button
+                                type="button"
+                                aria-label="Quitar una unidad"
+                                disabled={item.cantidad <= 1}
+                                onClick={() =>
+                                  cambiarCantidad(
+                                    item.id,
+                                    item.cantidad - 1
+                                  )
+                                }
+                              >
+                                −
+                              </button>
+
+                              <span className="carrito-item-cantidad">
+                                {item.cantidad}
+                              </span>
+
+                              <button
+                                type="button"
+                                aria-label="Agregar una unidad"
+                                disabled={bloqueado}
+                                onClick={() =>
+                                  cambiarCantidad(
+                                    item.id,
+                                    item.cantidad + 1
+                                  )
+                                }
+                              >
+                                +
+                              </button>
+
+                              <button
+                                type="button"
+                                className="carrito-item-quitar"
+                                onClick={() => quitarProducto(item.id)}
+                              >
+                                Quitar
+                              </button>
+                            </div>
+                          </div>
+
+                          <p className="carrito-item-subtotal">
+                            {formatearPrecioCOP(item.precio * item.cantidad)}
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </section>
+
+                <aside
+                  className="carrito-resumen"
+                  aria-label="Resumen de la compra"
+                >
+                  <h2>Resumen</h2>
+
+                  <div className="carrito-resumen-fila">
+                    <span>Artículos</span>
+                    <span>{articulos}</span>
+                  </div>
+
+                  <div className="carrito-resumen-fila carrito-resumen-total">
+                    <span>Total</span>
+                    <span>{formatearPrecioCOP(total)}</span>
+                  </div>
+
+                  <p className="carrito-resumen-envio">
+                    Envío y entrega: de 30 a 40 días hábiles.
                   </p>
-                )}
-              </aside>
-            </div>
+
+                  <button
+                    type="button"
+                    className="carrito-boton carrito-boton-primario"
+                    onClick={manejarPago}
+                    disabled={disponibles.length === 0}
+                  >
+                    {mostrarPago ? "Pagar en el formulario" : "Finalizar compra"}
+                  </button>
+
+                  {avisoPago && (
+                    <p className="carrito-aviso" role="status">
+                      {avisoPago}
+                    </p>
+                  )}
+                </aside>
+              </div>
+
+              {mostrarPago && (
+                <section
+                  className="carrito-pago"
+                  ref={pagoRef}
+                  aria-label="Pago con tarjeta"
+                >
+                  <h2>Pago seguro</h2>
+                  <p className="carrito-pago-total">
+                    Total a pagar: {formatearPrecioCOP(total)}
+                  </p>
+
+                  <PagoBrick
+                    items={disponibles}
+                    total={total}
+                    onResultado={manejarResultadoPago}
+                  />
+
+                  <button
+                    type="button"
+                    className="carrito-boton"
+                    onClick={() => setMostrarPago(false)}
+                  >
+                    Volver al carrito
+                  </button>
+                </section>
+              )}
+            </>
           )}
         </div>
       </main>
